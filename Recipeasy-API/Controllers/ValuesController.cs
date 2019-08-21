@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
@@ -26,18 +25,11 @@ namespace Recipeasy_API.Controllers
             return new string[] { "Andrew", "Colin", "Rebecca" };
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
-        {
-            return _configuration["AppSecret"];
-        }
-
         // POST api/values
         [HttpPost]
         public async void Post([FromBody] string recipeName)
         {
-            var password = _configuration.GetValue<string>("SecretValues:SecretTablesPassword");
+            var password = _configuration.GetValue<string>("SecretTablesPassword");
 
             var storageAccount = new CloudStorageAccount(
                 new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials("recipeasytables", password),
@@ -48,29 +40,11 @@ namespace Recipeasy_API.Controllers
 
             var recipeTable = tableClient.GetTableReference("recipeTable");
 
-            await CreatePeopleTableAsync(recipeTable);
+            await recipeTable.CreateIfNotExistsAsync();
 
             var recipe = new RecipeEntity("testUsername", recipeName);
 
             await recipeTable.ExecuteAsync(TableOperation.Insert(recipe));
-        }
-
-        private async Task CreatePeopleTableAsync(CloudTable recipeTable)
-        {
-            // Create the CloudTable if it does not exist
-            await recipeTable.CreateIfNotExistsAsync();
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }
