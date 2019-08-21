@@ -30,7 +30,7 @@ namespace Recipeasy_API.Controllers
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
-            return "value";
+            return _configuration["AppSecret"];
         }
 
         // POST api/values
