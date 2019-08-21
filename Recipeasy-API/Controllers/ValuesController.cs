@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table;
+using Recipeasy_API.Entities;
 
 namespace Recipeasy_API.Controllers
 {
@@ -10,6 +12,13 @@ namespace Recipeasy_API.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private readonly IConfiguration _configuration;
+
+        public ValuesController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
@@ -26,8 +35,30 @@ namespace Recipeasy_API.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async void Post([FromBody] string recipeName)
         {
+            var password = _configuration.GetValue<string>("SecretValues:SecretTablesPassword");
+
+            var storageAccount = new CloudStorageAccount(
+                new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials("recipeasytables", password),
+                true
+                );
+
+            var tableClient = storageAccount.CreateCloudTableClient();
+
+            var recipeTable = tableClient.GetTableReference("recipeTable");
+
+            await CreatePeopleTableAsync(recipeTable);
+
+            var recipe = new RecipeEntity("testUsername", recipeName);
+
+            await recipeTable.ExecuteAsync(TableOperation.Insert(recipe));
+        }
+
+        private async Task CreatePeopleTableAsync(CloudTable recipeTable)
+        {
+            // Create the CloudTable if it does not exist
+            await recipeTable.CreateIfNotExistsAsync();
         }
 
         // PUT api/values/5
