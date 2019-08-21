@@ -14,7 +14,7 @@ namespace Recipeasy_API.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { "Andrew", "Colin" };
+            return new string[] { "Andrew", "Colin", "Rebecca" };
         }
 
         // GET api/values/5
