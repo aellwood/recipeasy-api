@@ -26,6 +26,12 @@ namespace Recipeasy_API.Controllers
             return new string[] { "Andrew", "Colin", "Rebecca" };
         }
 
+        [HttpGet, Route("testGet"), Authorize]
+        public ActionResult<IEnumerable<string>> Get2()
+        {
+            return new string[] { "Andrew", "Colin", "Rebecca" };
+        }
+
         // POST api/values
         [HttpPost, Authorize]
         public async void Post([FromBody] string recipeName)
