@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
@@ -26,7 +27,7 @@ namespace Recipeasy_API.Controllers
         }
 
         // POST api/values
-        [HttpPost]
+        [HttpPost, Authorize]
         public async void Post([FromBody] string recipeName)
         {
             var password = _configuration.GetValue<string>("SecretTablesPassword");
