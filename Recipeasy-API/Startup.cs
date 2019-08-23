@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Recipeasy_API.Interfaces.Services;
+using Recipeasy_API.Services;
 
 namespace Recipeasy_API
 {
@@ -29,6 +31,8 @@ namespace Recipeasy_API
                 options.Audience = Configuration["Auth0Audience"];
             });
 
+            AddRecipeasyDependencies(services);
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSwaggerGen(c =>
@@ -39,6 +43,11 @@ namespace Recipeasy_API
                     Version = "v1"
                 });
             });
+        }
+
+        private void AddRecipeasyDependencies(IServiceCollection services)
+        {
+            services.AddTransient<IRecipesService, RecipesService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

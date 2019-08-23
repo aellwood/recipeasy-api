@@ -9,5 +9,10 @@ namespace Recipeasy_API.Entities
             this.PartitionKey = userName;
             this.RowKey = recipeName;
         }
+
+        public string Ingredients { get; set; }
+
+        public string Notes { get; set; }
+
     }
 }
