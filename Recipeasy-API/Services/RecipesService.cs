@@ -6,7 +6,6 @@ using Recipeasy_API.Interfaces.Services;
 using Recipeasy_API.Payload;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -22,12 +21,13 @@ namespace Recipeasy_API.Services
             dbPassword = configuration["SecretTablesPassword"];
         }
 
-        public async Task AddRecipe(RecipePayload recipePayload, string email)
+        public async Task AddRecipe(RecipeModel recipePayload, string email)
         {
             var recipeTable = await AccessDb();
 
-            var recipeEntity = new RecipeEntity(email, recipePayload.RecipeName)
+            var recipeEntity = new RecipeEntity(email, recipePayload.RecipeId)
             {
+                RecipeName = recipePayload.RecipeName,
                 Ingredients = recipePayload.Ingredients.ToString(Formatting.None),
                 Notes = recipePayload.Notes
             };
@@ -35,14 +35,15 @@ namespace Recipeasy_API.Services
             await recipeTable.ExecuteAsync(TableOperation.Insert(recipeEntity));
         }
 
-        public async Task<IEnumerable<RecipePayload>> GetRecipes(string email)
+        public async Task<IEnumerable<RecipeModel>> GetRecipes(string email)
         {
             var recipeTable = await AccessDb();
             var recipeEntities = await GetRecipes(recipeTable, email);
 
-            return recipeEntities.Select(x => new RecipePayload
+            return recipeEntities.Select(x => new RecipeModel
             {
-                RecipeName = x.RowKey,
+                RecipeId = x.RowKey,
+                RecipeName = x.RecipeName,
                 Ingredients = JArray.Parse(x.Ingredients),
                 Notes = x.Notes
             });

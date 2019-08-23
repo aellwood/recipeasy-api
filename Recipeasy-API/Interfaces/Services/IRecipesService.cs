@@ -6,7 +6,7 @@ namespace Recipeasy_API.Interfaces.Services
 {
     public interface IRecipesService
     {
-        Task AddRecipe(RecipePayload recipe, string email);
-        Task<IEnumerable<RecipePayload>> GetRecipes(string email);
+        Task AddRecipe(RecipeModel recipe, string email);
+        Task<IEnumerable<RecipeModel>> GetRecipes(string email);
     }
 }

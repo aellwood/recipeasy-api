@@ -4,13 +4,15 @@ namespace Recipeasy_API.Entities
 {
     public class RecipeEntity : TableEntity
     {
-        public RecipeEntity(string userName, string recipeName)
+        public RecipeEntity(string userName, string recipeId)
         {
             this.PartitionKey = userName;
-            this.RowKey = recipeName;
+            this.RowKey = recipeId;
         }
 
         public RecipeEntity() { }
+
+        public string RecipeName { get; set; }
 
         public string Ingredients { get; set; }
 

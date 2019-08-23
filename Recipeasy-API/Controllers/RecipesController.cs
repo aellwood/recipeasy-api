@@ -22,7 +22,7 @@ namespace Recipeasy_API.Controllers
         }
 
         [HttpPost, Authorize]
-        public async Task<IActionResult> Post([FromBody] RecipePayload recipe)
+        public async Task<IActionResult> Post([FromBody] RecipeModel recipe)
         {
             await recipeService.AddRecipe(recipe, GetUserEmail());
 
