@@ -10,6 +10,8 @@ namespace Recipeasy_API.Entities
             this.RowKey = recipeName;
         }
 
+        public RecipeEntity() { }
+
         public string Ingredients { get; set; }
 
         public string Notes { get; set; }

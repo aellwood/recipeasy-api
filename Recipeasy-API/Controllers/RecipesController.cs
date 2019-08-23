@@ -32,9 +32,9 @@ namespace Recipeasy_API.Controllers
         [HttpGet, Authorize]
         public async Task<IActionResult> Get()
         {
-            await recipeService.GetRecipes(GetUserEmail());
+            var recipes = await recipeService.GetRecipes(GetUserEmail());
 
-            return Ok();
+            return Ok(recipes);
         }
 
         private string GetUserEmail()

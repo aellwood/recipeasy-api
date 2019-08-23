@@ -6,6 +6,10 @@ using Recipeasy_API.Interfaces.Services;
 using Recipeasy_API.Payload;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Recipeasy_API.Services
 {
@@ -31,11 +35,31 @@ namespace Recipeasy_API.Services
             await recipeTable.ExecuteAsync(TableOperation.Insert(recipeEntity));
         }
 
-        public async Task GetRecipes(string email)
+        public async Task<IEnumerable<RecipePayload>> GetRecipes(string email)
         {
             var recipeTable = await AccessDb();
+            var recipeEntities = await GetRecipes(recipeTable, email);
 
-            // await recipeTable.ExecuteAsync(TableOperation.Retrieve("")));
+            return recipeEntities.Select(x => new RecipePayload
+            {
+                RecipeName = x.RowKey,
+                Ingredients = JArray.Parse(x.Ingredients),
+                Notes = x.Notes
+            });
+        }
+
+        private async Task<IEnumerable<RecipeEntity>> GetRecipes(CloudTable recipeTable, string email)
+        {
+            var query = new TableQuery<RecipeEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, email));
+
+            TableContinuationToken token = null;
+            do
+            {
+                var resultSegment = await recipeTable.ExecuteQuerySegmentedAsync(query, token);
+                token = resultSegment.ContinuationToken;
+
+                return resultSegment.Results;
+            } while (token != null);
         }
 
         private async Task<CloudTable> AccessDb()
