@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace Recipeasy_API.Services
 {
@@ -21,11 +22,13 @@ namespace Recipeasy_API.Services
             dbPassword = configuration["SecretTablesPassword"];
         }
 
-        public async Task AddRecipe(RecipeModel recipePayload, string email)
+        public async Task<RecipeModel> AddRecipe(RecipeModel recipePayload, string email)
         {
             var recipeTable = await AccessDb();
 
-            var recipeEntity = new RecipeEntity(email, recipePayload.RecipeId)
+            var guid = Guid.NewGuid().ToString();
+
+            var recipeEntity = new RecipeEntity(email, guid)
             {
                 RecipeName = recipePayload.RecipeName,
                 Ingredients = recipePayload.Ingredients.ToString(Formatting.None),
@@ -33,6 +36,9 @@ namespace Recipeasy_API.Services
             };
 
             await recipeTable.ExecuteAsync(TableOperation.Insert(recipeEntity));
+
+            recipePayload.RecipeId = guid;
+            return recipePayload;
         }
 
         public async Task<IEnumerable<RecipeModel>> GetRecipes(string email)
