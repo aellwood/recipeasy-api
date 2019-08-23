@@ -25,8 +25,8 @@ namespace Recipeasy_API
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
-                options.Authority = Configuration["Auth0.Authority"];
-                options.Audience = Configuration["Auth0.Audience"];
+                options.Authority = Configuration["Auth0Authority"];
+                options.Audience = Configuration["Auth0Audience"];
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

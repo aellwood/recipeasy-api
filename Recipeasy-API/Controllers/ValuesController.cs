@@ -23,7 +23,7 @@ namespace Recipeasy_API.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { _configuration["Auth0.Authority"], _configuration["Auth0.Audience"] };
+            return new string[] { _configuration["Auth0Authority"], _configuration["Auth0Audience"] };
         }
 
         [HttpGet, Route("testGet"), Authorize]
