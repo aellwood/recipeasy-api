@@ -55,6 +55,23 @@ namespace Recipeasy_API.Services
             });
         }
 
+        public async Task<RecipeEntity> DeleteRecipe(string email, string recipeId)
+        {
+            var table = await AccessDb();
+
+            var retrieveOperation = TableOperation.Retrieve<RecipeEntity>(email, recipeId);
+            var recipe = await table.ExecuteAsync(retrieveOperation);
+            var deleteEntity = (RecipeEntity) recipe.Result;
+
+            if (recipe != null)
+            {
+                await table.ExecuteAsync(TableOperation.Delete(deleteEntity));
+                return deleteEntity;
+            }
+
+            return null;
+        }
+
         private async Task<IEnumerable<RecipeEntity>> GetRecipes(CloudTable recipeTable, string email)
         {
             var query = new TableQuery<RecipeEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, email));

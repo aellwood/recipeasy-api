@@ -37,6 +37,14 @@ namespace Recipeasy_API.Controllers
             return Ok(recipes);
         }
 
+        [HttpDelete, Authorize]
+        public async Task<IActionResult> Delete([FromBody] string recipeId)
+        {
+            var recipe = await recipeService.DeleteRecipe(GetUserEmail(), recipeId);
+
+            return Ok(recipe);
+        }
+
         private string GetUserEmail()
         {
             return HttpContext.GetClaim(configuration["Auth0ClaimNameSpace"] + "/email").Value;
