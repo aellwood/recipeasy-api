@@ -48,6 +48,7 @@ namespace Recipeasy_API
         private void AddRecipeasyDependencies(IServiceCollection services)
         {
             services.AddTransient<IRecipesService, RecipesService>();
+            services.AddTransient<IDatabaseService, DatabaseService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

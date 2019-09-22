@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.WindowsAzure.Storage.Table;
-using Microsoft.WindowsAzure.Storage;
+﻿using Microsoft.WindowsAzure.Storage.Table;
 using Recipeasy_API.Entities;
 using Recipeasy_API.Interfaces.Services;
 using Recipeasy_API.Payload;
@@ -15,16 +13,16 @@ namespace Recipeasy_API.Services
 {
     internal class RecipesService : IRecipesService
 {
-        private readonly string dbPassword;
+        private readonly IDatabaseService databaseService;
 
-        public RecipesService(IConfiguration configuration)
+        public RecipesService(IDatabaseService databaseService)
         {
-            dbPassword = configuration["SecretTablesPassword"];
+            this.databaseService = databaseService;
         }
 
         public async Task<RecipeModel> AddRecipe(RecipeModel recipePayload, string email)
         {
-            var recipeTable = await AccessDb();
+            var recipeTable = await databaseService.AccessDb();
 
             var guid = Guid.NewGuid().ToString();
 
@@ -43,8 +41,8 @@ namespace Recipeasy_API.Services
 
         public async Task<IEnumerable<RecipeModel>> GetRecipes(string email)
         {
-            var recipeTable = await AccessDb();
-            var recipeEntities = await GetRecipes(recipeTable, email);
+            var recipeTable = await databaseService.AccessDb();
+            var recipeEntities = await databaseService.GetRecipes(recipeTable, email);
 
             return recipeEntities.Select(x => new RecipeModel
             {
@@ -57,7 +55,7 @@ namespace Recipeasy_API.Services
 
         public async Task<RecipeEntity> DeleteRecipe(string email, string recipeId)
         {
-            var table = await AccessDb();
+            var table = await databaseService.AccessDb();
 
             var retrieveOperation = TableOperation.Retrieve<RecipeEntity>(email, recipeId);
             var recipe = await table.ExecuteAsync(retrieveOperation);
@@ -70,36 +68,6 @@ namespace Recipeasy_API.Services
             }
 
             return null;
-        }
-
-        private async Task<IEnumerable<RecipeEntity>> GetRecipes(CloudTable recipeTable, string email)
-        {
-            var query = new TableQuery<RecipeEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, email));
-
-            TableContinuationToken token = null;
-            do
-            {
-                var resultSegment = await recipeTable.ExecuteQuerySegmentedAsync(query, token);
-                token = resultSegment.ContinuationToken;
-
-                return resultSegment.Results;
-            } while (token != null);
-        }
-
-        private async Task<CloudTable> AccessDb()
-        {
-            var storageAccount = new CloudStorageAccount(
-                new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials("recipeasytables", dbPassword),
-                true
-            );
-
-            var tableClient = storageAccount.CreateCloudTableClient();
-
-            var recipeTable = tableClient.GetTableReference("recipeTable");
-
-            await recipeTable.CreateIfNotExistsAsync();
-
-            return recipeTable;
         }
     }
 }
