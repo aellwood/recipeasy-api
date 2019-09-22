@@ -10,5 +10,10 @@ namespace Recipeasy_API.ExtensionMethods
         {
             return ctx.User.Claims.FirstOrDefault(x => x.Type == claimType);
         }
+
+        public static string GetClaimValue(this HttpContext ctx, string claimType)
+        {
+            return GetClaim(ctx, claimType).Value;
+        }
     }
 }

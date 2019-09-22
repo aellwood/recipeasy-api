@@ -47,7 +47,7 @@ namespace Recipeasy_API.Controllers
 
         private string GetUserEmail()
         {
-            return HttpContext.GetClaim(configuration["Auth0ClaimNameSpace"] + "/email").Value;
+            return HttpContext.GetClaimValue(configuration["Auth0ClaimNameSpace"] + "/email");
         }
     }
 }

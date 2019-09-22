@@ -2,6 +2,7 @@
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Table;
+using Recipeasy_API.Helpers;
 using Recipeasy_API.Interfaces.Services;
 using System;
 using System.Collections.Generic;
@@ -20,14 +21,14 @@ namespace Recipeasy_API.Services
 
         public async Task Add<T>(string email, T entity) where T : TableEntity, new()
         {
-            var tableName = GetTableName(typeof(T).Name);
+            var tableName = TableNameHelper.GetTableName(typeof(T).Name);
             var table = await GetTable(tableName);
             await table.ExecuteAsync(TableOperation.Insert(entity));
         }
 
         public async Task<IEnumerable<T>> Get<T>(string email) where T : TableEntity, new()
         {
-            var tableName = GetTableName(typeof(T).Name);
+            var tableName = TableNameHelper.GetTableName(typeof(T).Name);
             var table = await GetTable(tableName);
             var query = new TableQuery<T>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, email));
 
@@ -45,7 +46,7 @@ namespace Recipeasy_API.Services
 
         public async Task<T> Delete<T>(string email, string id) where T : TableEntity, new()
         {
-            var tableName = GetTableName(typeof(T).Name);
+            var tableName = TableNameHelper.GetTableName(typeof(T).Name);
             var table = await GetTable(tableName);
             var op = TableOperation.Retrieve<T>(email, id);
             var row = await table.ExecuteAsync(op);
@@ -68,16 +69,6 @@ namespace Recipeasy_API.Services
             await table.CreateIfNotExistsAsync();
 
             return table;
-        }
-
-        private string GetTableName(string entityName)
-        {
-            switch(entityName)
-            {
-                case "RecipeEntity":
-                    return "recipeTable";
-                default: throw new ArgumentOutOfRangeException($"{entityName} is an unknown entity type - cannot find associated table name.");
-            }
         }
     }
 }
