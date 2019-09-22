@@ -3,12 +3,13 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Table;
 using Recipeasy_API.Interfaces.Services;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Recipeasy_API.Services
 {
-    internal class DatabaseService : IDatabaseService
+    public class DatabaseService : IDatabaseService
     {
         private readonly string dbPassword;
 
@@ -19,38 +20,41 @@ namespace Recipeasy_API.Services
 
         public async Task Add<T>(string email, T entity) where T : TableEntity, new()
         {
-            var table = await GetTable("recipeTable");
+            var tableName = GetTableName(typeof(T).Name);
+            var table = await GetTable(tableName);
             await table.ExecuteAsync(TableOperation.Insert(entity));
         }
 
         public async Task<IEnumerable<T>> Get<T>(string email) where T : TableEntity, new()
         {
-            var table = await GetTable("recipeTable");
+            var tableName = GetTableName(typeof(T).Name);
+            var table = await GetTable(tableName);
             var query = new TableQuery<T>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, email));
 
             TableContinuationToken token = null;
 
             do
             {
-                var resultSegment = await table.ExecuteQuerySegmentedAsync(query, token);
-                token = resultSegment.ContinuationToken;
+                var segment = await table.ExecuteQuerySegmentedAsync(query, token);
+                token = segment.ContinuationToken;
 
-                return resultSegment.Results;
+                return segment.Results;
             }
             while (token != null);
         }
 
         public async Task<T> Delete<T>(string email, string id) where T : TableEntity, new()
         {
-            var table = await GetTable("recipeTable");
-            var retrieveOperation = TableOperation.Retrieve<T>(email, id);
-            var row = await table.ExecuteAsync(retrieveOperation);
+            var tableName = GetTableName(typeof(T).Name);
+            var table = await GetTable(tableName);
+            var op = TableOperation.Retrieve<T>(email, id);
+            var row = await table.ExecuteAsync(op);
 
             if (row != null)
             {
-                var deleteEntity = (T) row.Result;
-                await table.ExecuteAsync(TableOperation.Delete(deleteEntity));
-                return deleteEntity;
+                var entity = (T) row.Result;
+                await table.ExecuteAsync(TableOperation.Delete(entity));
+                return entity;
             }
 
             return null;
@@ -58,12 +62,22 @@ namespace Recipeasy_API.Services
 
         private async Task<CloudTable> GetTable(string tableName)
         {
-            var storageAccount = new CloudStorageAccount(new StorageCredentials("recipeasytables", dbPassword), true);
-            var tableClient = storageAccount.CreateCloudTableClient();
-            var table = tableClient.GetTableReference(tableName);
+            var acc = new CloudStorageAccount(new StorageCredentials("recipeasytables", dbPassword), true);
+            var client = acc.CreateCloudTableClient();
+            var table = client.GetTableReference(tableName);
             await table.CreateIfNotExistsAsync();
 
             return table;
+        }
+
+        private string GetTableName(string entityName)
+        {
+            switch(entityName)
+            {
+                case "RecipeEntity":
+                    return "recipeTable";
+                default: throw new ArgumentOutOfRangeException($"{entityName} is an unknown entity type - cannot find associated table name.");
+            }
         }
     }
 }

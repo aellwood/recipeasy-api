@@ -10,7 +10,7 @@ using System;
 
 namespace Recipeasy_API.Services
 {
-    internal class RecipesService : IRecipesService
+    public class RecipesService : IRecipesService
 {
         private readonly IDatabaseService databaseService;
 
