@@ -16,24 +16,16 @@ namespace Recipeasy_API.Services
             dbPassword = configuration["SecretTablesPassword"];
         }
 
-        public async Task<CloudTable> AccessDb()
+        public async Task Add<T>(string email, T entity) where T : TableEntity, new()
         {
-            var storageAccount = new CloudStorageAccount(
-                new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials("recipeasytables", dbPassword),
-                true
-            );
+            var table = await GetTable("recipeTable");
 
-            var tableClient = storageAccount.CreateCloudTableClient();
-
-            var recipeTable = tableClient.GetTableReference("recipeTable");
-
-            await recipeTable.CreateIfNotExistsAsync();
-
-            return recipeTable;
+            await table.ExecuteAsync(TableOperation.Insert(entity));
         }
 
-        public async Task<IEnumerable<T>> Get<T>(CloudTable table, string email) where T : TableEntity, new()
+        public async Task<IEnumerable<T>> Get<T>(string email) where T : TableEntity, new()
         {
+            var table = await GetTable("recipeTable");
             var query = new TableQuery<T>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, email));
 
             TableContinuationToken token = null;
@@ -44,6 +36,39 @@ namespace Recipeasy_API.Services
 
                 return resultSegment.Results;
             } while (token != null);
+        }
+
+        public async Task<T> Delete<T>(string email, string id) where T : TableEntity, new()
+        {
+            var table = await GetTable("recipeTable");
+            var retrieveOperation = TableOperation.Retrieve<T>(email, id);
+
+            var row = await table.ExecuteAsync(retrieveOperation);
+
+            if (row != null)
+            {
+                var deleteEntity = (T) row.Result;
+                await table.ExecuteAsync(TableOperation.Delete(deleteEntity));
+                return deleteEntity;
+            }
+
+            return null;
+        }
+
+        private async Task<CloudTable> GetTable(string tableName)
+        {
+            var storageAccount = new CloudStorageAccount(
+                new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials("recipeasytables", dbPassword),
+                true
+            );
+
+            var tableClient = storageAccount.CreateCloudTableClient();
+
+            var recipeTable = tableClient.GetTableReference(tableName);
+
+            await recipeTable.CreateIfNotExistsAsync();
+
+            return recipeTable;
         }
     }
 }

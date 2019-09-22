@@ -1,5 +1,4 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
-using Recipeasy_API.Entities;
+﻿using Recipeasy_API.Entities;
 using Recipeasy_API.Interfaces.Services;
 using Recipeasy_API.Payload;
 using System.Threading.Tasks;
@@ -22,8 +21,6 @@ namespace Recipeasy_API.Services
 
         public async Task<RecipeModel> AddRecipe(RecipeModel recipePayload, string email)
         {
-            var recipeTable = await databaseService.AccessDb();
-
             var guid = Guid.NewGuid().ToString();
 
             var recipeEntity = new RecipeEntity(email, guid)
@@ -33,7 +30,7 @@ namespace Recipeasy_API.Services
                 Notes = recipePayload.Notes
             };
 
-            await recipeTable.ExecuteAsync(TableOperation.Insert(recipeEntity));
+            await databaseService.Add(email, recipeEntity);
 
             recipePayload.RecipeId = guid;
             return recipePayload;
@@ -41,8 +38,7 @@ namespace Recipeasy_API.Services
 
         public async Task<IEnumerable<RecipeModel>> GetRecipes(string email)
         {
-            var recipeTable = await databaseService.AccessDb();
-            var recipeEntities = await databaseService.Get<RecipeEntity>(recipeTable, email);
+            var recipeEntities = await databaseService.Get<RecipeEntity>(email);
 
             return recipeEntities.Select(x => new RecipeModel
             {
@@ -55,19 +51,7 @@ namespace Recipeasy_API.Services
 
         public async Task<RecipeEntity> DeleteRecipe(string email, string recipeId)
         {
-            var table = await databaseService.AccessDb();
-
-            var retrieveOperation = TableOperation.Retrieve<RecipeEntity>(email, recipeId);
-            var recipe = await table.ExecuteAsync(retrieveOperation);
-            var deleteEntity = (RecipeEntity) recipe.Result;
-
-            if (recipe != null)
-            {
-                await table.ExecuteAsync(TableOperation.Delete(deleteEntity));
-                return deleteEntity;
-            }
-
-            return null;
+            return await databaseService.Delete<RecipeEntity>(email, recipeId);
         }
     }
 }

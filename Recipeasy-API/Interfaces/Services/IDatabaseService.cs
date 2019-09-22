@@ -6,8 +6,10 @@ namespace Recipeasy_API.Interfaces.Services
 {
     public interface IDatabaseService
     {
-        Task<CloudTable> AccessDb();
+        Task Add<T>(string email, T entity) where T : TableEntity, new();
 
-        Task<IEnumerable<T>> Get<T>(CloudTable table, string email) where T : TableEntity, new();
+        Task<IEnumerable<T>> Get<T>(string email) where T : TableEntity, new();
+
+        Task<T> Delete<T>(string email, string id) where T : TableEntity, new();
     }
 }

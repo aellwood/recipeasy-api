@@ -17,6 +17,5 @@ namespace Recipeasy_API.Entities
         public string Ingredients { get; set; }
 
         public string Notes { get; set; }
-
     }
 }
