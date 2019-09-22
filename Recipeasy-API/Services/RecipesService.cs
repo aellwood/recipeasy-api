@@ -42,7 +42,7 @@ namespace Recipeasy_API.Services
         public async Task<IEnumerable<RecipeModel>> GetRecipes(string email)
         {
             var recipeTable = await databaseService.AccessDb();
-            var recipeEntities = await databaseService.GetRecipes(recipeTable, email);
+            var recipeEntities = await databaseService.Get<RecipeEntity>(recipeTable, email);
 
             return recipeEntities.Select(x => new RecipeModel
             {

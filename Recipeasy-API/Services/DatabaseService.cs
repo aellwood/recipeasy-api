@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
-using Recipeasy_API.Entities;
 using Recipeasy_API.Interfaces.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -33,14 +32,14 @@ namespace Recipeasy_API.Services
             return recipeTable;
         }
 
-        public async Task<IEnumerable<RecipeEntity>> GetRecipes(CloudTable recipeTable, string email)
+        public async Task<IEnumerable<T>> Get<T>(CloudTable table, string email) where T : TableEntity, new()
         {
-            var query = new TableQuery<RecipeEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, email));
+            var query = new TableQuery<T>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, email));
 
             TableContinuationToken token = null;
             do
             {
-                var resultSegment = await recipeTable.ExecuteQuerySegmentedAsync(query, token);
+                var resultSegment = await table.ExecuteQuerySegmentedAsync(query, token);
                 token = resultSegment.ContinuationToken;
 
                 return resultSegment.Results;
