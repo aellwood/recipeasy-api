@@ -60,10 +60,10 @@ namespace Recipeasy_API.Services
         {
             var storageAccount = new CloudStorageAccount(new StorageCredentials("recipeasytables", dbPassword), true);
             var tableClient = storageAccount.CreateCloudTableClient();
-            var recipeTable = tableClient.GetTableReference(tableName);
-            await recipeTable.CreateIfNotExistsAsync();
+            var table = tableClient.GetTableReference(tableName);
+            await table.CreateIfNotExistsAsync();
 
-            return recipeTable;
+            return table;
         }
     }
 }
