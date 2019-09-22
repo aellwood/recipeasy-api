@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Table;
 using Recipeasy_API.Interfaces.Services;
 using System.Collections.Generic;
@@ -19,7 +20,6 @@ namespace Recipeasy_API.Services
         public async Task Add<T>(string email, T entity) where T : TableEntity, new()
         {
             var table = await GetTable("recipeTable");
-
             await table.ExecuteAsync(TableOperation.Insert(entity));
         }
 
@@ -29,20 +29,21 @@ namespace Recipeasy_API.Services
             var query = new TableQuery<T>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, email));
 
             TableContinuationToken token = null;
+
             do
             {
                 var resultSegment = await table.ExecuteQuerySegmentedAsync(query, token);
                 token = resultSegment.ContinuationToken;
 
                 return resultSegment.Results;
-            } while (token != null);
+            }
+            while (token != null);
         }
 
         public async Task<T> Delete<T>(string email, string id) where T : TableEntity, new()
         {
             var table = await GetTable("recipeTable");
             var retrieveOperation = TableOperation.Retrieve<T>(email, id);
-
             var row = await table.ExecuteAsync(retrieveOperation);
 
             if (row != null)
@@ -57,15 +58,9 @@ namespace Recipeasy_API.Services
 
         private async Task<CloudTable> GetTable(string tableName)
         {
-            var storageAccount = new CloudStorageAccount(
-                new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials("recipeasytables", dbPassword),
-                true
-            );
-
+            var storageAccount = new CloudStorageAccount(new StorageCredentials("recipeasytables", dbPassword), true);
             var tableClient = storageAccount.CreateCloudTableClient();
-
             var recipeTable = tableClient.GetTableReference(tableName);
-
             await recipeTable.CreateIfNotExistsAsync();
 
             return recipeTable;
