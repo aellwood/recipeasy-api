@@ -1,12 +1,10 @@
 ﻿using Recipeasy_API.Entities;
 using Recipeasy_API.Interfaces.Services;
-using Recipeasy_API.Payload;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json.Linq;
 using System;
+using Recipeasy_API.Models;
+using System.Linq;
 
 namespace Recipeasy_API.Services
 {
@@ -19,39 +17,46 @@ namespace Recipeasy_API.Services
             this.databaseService = databaseService;
         }
 
-        public async Task<RecipeModel> AddRecipe(RecipeModel recipePayload, string email)
+        public async Task AddRecipe(Recipe recipePayload, string email)
         {
-            var guid = Guid.NewGuid().ToString();
-
-            var recipeEntity = new RecipeEntity(email, guid)
+            var recipeGuid = Guid.NewGuid().ToString();
+            var recipeEntity = new RecipeEntity(email, recipeGuid)
             {
                 RecipeName = recipePayload.RecipeName,
-                Ingredients = recipePayload.Ingredients.ToString(Formatting.None),
                 Notes = recipePayload.Notes
             };
 
-            await databaseService.Add(email, recipeEntity);
+            await databaseService.Add(recipeEntity);
 
-            recipePayload.RecipeId = guid;
-            return recipePayload;
+            recipePayload.Ingredients.ForEach(async x => 
+                await databaseService.Add(new IngredientEntity(recipeGuid, Guid.NewGuid().ToString())
+            {
+                IngredientName = x.IngredientName,
+                Quantity = x.Quantity
+            }));
         }
 
-        public async Task<IEnumerable<RecipeModel>> GetRecipes(string email)
+        public List<Recipe> GetRecipes(string email)
         {
-            var recipeEntities = await databaseService.Get<RecipeEntity>(email);
+            var recipeEntities = databaseService.Get<RecipeEntity>(email);
 
-            return recipeEntities.Select(x => new RecipeModel
+            return recipeEntities.Result.Select(x => new Recipe
             {
                 RecipeId = x.RowKey,
                 RecipeName = x.RecipeName,
-                Ingredients = JArray.Parse(x.Ingredients),
-                Notes = x.Notes
-            });
+                Notes = x.Notes,
+                Ingredients = databaseService.Get<IngredientEntity>(x.RowKey).Result.Select(y => new Ingredient
+                {
+                    IngredientId = y.RowKey,
+                    IngredientName = y.IngredientName,
+                    Quantity = y.Quantity
+                }).ToList()
+            }).ToList();
         }
 
-        public async Task<RecipeEntity> DeleteRecipe(string email, string recipeId)
+        public async Task DeleteRecipe(string email, string recipeId)
         {
-            return await databaseService.Delete<RecipeEntity>(email, recipeId);
+            await databaseService.Delete<RecipeEntity>(email, recipeId);
         }
     }
 }

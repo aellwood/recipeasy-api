@@ -6,7 +6,7 @@ namespace Recipeasy_API.Interfaces.Services
 {
     public interface IDatabaseService
     {
-        Task Add<T>(string email, T entity) where T : TableEntity, new();
+        Task Add<T>(T entity) where T : TableEntity, new();
 
         Task<IEnumerable<T>> Get<T>(string email) where T : TableEntity, new();
 

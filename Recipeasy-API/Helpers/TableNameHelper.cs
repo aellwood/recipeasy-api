@@ -10,6 +10,8 @@ namespace Recipeasy_API.Helpers
             {
                 case "RecipeEntity":
                     return "recipeTable";
+                case "IngredientEntity":
+                    return "ingredientTable";
                 default:
                     throw new ArgumentOutOfRangeException($"{entityName} is an unknown entity type - cannot find associated table name.");
             }

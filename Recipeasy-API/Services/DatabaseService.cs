@@ -4,7 +4,6 @@ using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Table;
 using Recipeasy_API.Helpers;
 using Recipeasy_API.Interfaces.Services;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,18 +18,18 @@ namespace Recipeasy_API.Services
             dbPassword = configuration["SecretTablesPassword"];
         }
 
-        public async Task Add<T>(string email, T entity) where T : TableEntity, new()
+        public async Task Add<T>(T entity) where T : TableEntity, new()
         {
             var tableName = TableNameHelper.GetTableName(typeof(T).Name);
             var table = await GetTable(tableName);
             await table.ExecuteAsync(TableOperation.Insert(entity));
         }
 
-        public async Task<IEnumerable<T>> Get<T>(string email) where T : TableEntity, new()
+        public async Task<IEnumerable<T>> Get<T>(string key) where T : TableEntity, new()
         {
             var tableName = TableNameHelper.GetTableName(typeof(T).Name);
             var table = await GetTable(tableName);
-            var query = new TableQuery<T>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, email));
+            var query = new TableQuery<T>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, key));
 
             TableContinuationToken token = null;
 

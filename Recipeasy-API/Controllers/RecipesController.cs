@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Recipeasy_API.ExtensionMethods;
 using Recipeasy_API.Interfaces.Services;
-using Recipeasy_API.Payload;
+using Recipeasy_API.Models;
 using System.Threading.Tasks;
 
 namespace Recipeasy_API.Controllers
@@ -22,25 +22,25 @@ namespace Recipeasy_API.Controllers
         }
 
         [HttpPost, Authorize]
-        public async Task<IActionResult> Post([FromBody] RecipeModel recipe)
+        public async Task<IActionResult> Post([FromBody] Recipe recipe)
         {
-            var recipeWithGuid = await recipeService.AddRecipe(recipe, GetUserEmail());
+            await recipeService.AddRecipe(recipe, GetUserEmail());
 
-            return Ok(recipeWithGuid);
+            return Ok();
         }
 
         [HttpGet, Authorize]
-        public async Task<IActionResult> Get()
+        public IActionResult Get()
         {
-            var recipes = await recipeService.GetRecipes(GetUserEmail());
+            var recipes = recipeService.GetRecipes(GetUserEmail());
 
             return Ok(recipes);
         }
 
         [HttpDelete, Authorize]
-        public async Task<IActionResult> Delete([FromBody] string recipeId)
+        public IActionResult Delete([FromBody] string recipeId)
         {
-            var recipe = await recipeService.DeleteRecipe(GetUserEmail(), recipeId);
+            var recipe = recipeService.DeleteRecipe(GetUserEmail(), recipeId);
 
             return Ok(recipe);
         }

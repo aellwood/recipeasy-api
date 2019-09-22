@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
-namespace Recipeasy_API.Payload
+namespace Recipeasy_API.Models
 {
-    public class RecipeModel
+    public class Recipe
     {
         [JsonProperty("recipeId")]
         public string RecipeId { get; set; }
@@ -12,7 +12,7 @@ namespace Recipeasy_API.Payload
         public string RecipeName { get; set; }
 
         [JsonProperty("ingredients")]
-        public JArray Ingredients { get; set; }
+        public List<Ingredient> Ingredients { get; set; }
 
         [JsonProperty("notes")]
         public string Notes { get; set; }
