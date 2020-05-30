@@ -1,5 +1,4 @@
-﻿using Recipeasy_API.Entities;
-using Recipeasy_API.Models;
+﻿using Recipeasy_API.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
