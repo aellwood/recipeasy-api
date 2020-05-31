@@ -21,28 +21,31 @@ namespace Recipeasy_API.Controllers
             this.recipeService = recipeService;
         }
 
-        [HttpPost, Authorize]
+        [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Post([FromBody] Recipe recipe)
         {
-            var id = await recipeService.AddRecipe(recipe, GetUserEmail());
+            var addedRecipe = await recipeService.AddRecipe(recipe, GetUserEmail());
 
-            return Ok(id);
+            return Ok(addedRecipe);
         }
 
-        [HttpGet, Authorize]
-        public IActionResult Get()
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Get()
         {
-            var recipes = recipeService.GetRecipes(GetUserEmail());
+            var recipes = await recipeService.GetRecipes(GetUserEmail());
 
             return Ok(recipes);
         }
 
-        [HttpDelete, Authorize]
-        public IActionResult Delete([FromBody] string recipeId)
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> Delete([FromBody] string recipeId)
         {
-            var recipe = recipeService.DeleteRecipe(GetUserEmail(), recipeId);
+            await recipeService.DeleteRecipe(GetUserEmail(), recipeId);
 
-            return Ok(recipe);
+            return Ok();
         }
 
         private string GetUserEmail()

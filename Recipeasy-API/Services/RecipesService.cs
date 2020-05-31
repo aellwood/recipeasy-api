@@ -17,7 +17,7 @@ namespace Recipeasy_API.Services
             this.databaseService = databaseService;
         }
 
-        public async Task<string> AddRecipe(Recipe recipePayload, string email)
+        public async Task<Recipe> AddRecipe(Recipe recipePayload, string email)
         {
             var recipeGuid = Guid.NewGuid().ToString();
             var recipeEntity = new RecipeEntity(email, recipeGuid)
@@ -38,14 +38,18 @@ namespace Recipeasy_API.Services
                         Quantity = x.Quantity
                     }));
 
-            return recipeGuid;
+            //TODO: Create method to only retrieve one recipe using email and recipeId
+            var recipes = await GetRecipes(email);
+
+            return recipes.FirstOrDefault(x => x.RecipeId == recipeGuid);
+
         }
 
-        public List<Recipe> GetRecipes(string email)
+        public async Task<List<Recipe>> GetRecipes(string email)
         {
-            var recipeEntities = databaseService.Get<RecipeEntity>(email);
+            var recipeEntities = await databaseService.Get<RecipeEntity>(email);
 
-            return recipeEntities.Result.Select(x => new Recipe
+            return recipeEntities.Select(x => new Recipe
             {
                 RecipeId = x.RowKey,
                 RecipeName = x.RecipeName,
