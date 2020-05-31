@@ -24,9 +24,9 @@ namespace Recipeasy_API.Controllers
         [HttpPost, Authorize]
         public async Task<IActionResult> Post([FromBody] Recipe recipe)
         {
-            await recipeService.AddRecipe(recipe, GetUserEmail());
+            var id = await recipeService.AddRecipe(recipe, GetUserEmail());
 
-            return Ok();
+            return Ok(id);
         }
 
         [HttpGet, Authorize]
