@@ -41,7 +41,8 @@ namespace Recipeasy_API.Controllers
 
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> Delete([FromBody] string recipeId)
+        [Route("{recipeId}")]
+        public async Task<IActionResult> Delete([FromRoute] string recipeId)
         {
             await recipeService.DeleteRecipe(GetUserEmail(), recipeId);
 
