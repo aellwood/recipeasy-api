@@ -43,11 +43,11 @@ namespace Recipeasy_API.Services
             while (token != null);
         }
 
-        public async Task<T> Delete<T>(string email, string id) where T : TableEntity, new()
+        public async Task<T> Delete<T>(string partitionKey, string id) where T : TableEntity, new()
         {
             var tableName = TableNameHelper.GetTableName(typeof(T).Name);
             var table = await GetTable(tableName);
-            var op = TableOperation.Retrieve<T>(email, id);
+            var op = TableOperation.Retrieve<T>(partitionKey, id);
             var row = await table.ExecuteAsync(op);
 
             if (row != null)

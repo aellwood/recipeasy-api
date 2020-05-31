@@ -25,7 +25,7 @@ namespace Recipeasy_API.Controllers
         [Authorize]
         public async Task<IActionResult> Post([FromBody] Recipe recipe)
         {
-            var addedRecipe = await recipeService.AddRecipe(recipe, GetUserEmail());
+            var addedRecipe = await recipeService.AddRecipe(recipe, GetUserId());
 
             return Ok(addedRecipe);
         }
@@ -34,7 +34,7 @@ namespace Recipeasy_API.Controllers
         [Authorize]
         public async Task<IActionResult> Get()
         {
-            var recipes = await recipeService.GetRecipes(GetUserEmail());
+            var recipes = await recipeService.GetRecipes(GetUserId());
 
             return Ok(recipes);
         }
@@ -44,14 +44,14 @@ namespace Recipeasy_API.Controllers
         [Route("{recipeId}")]
         public async Task<IActionResult> Delete([FromRoute] string recipeId)
         {
-            await recipeService.DeleteRecipe(GetUserEmail(), recipeId);
+            await recipeService.DeleteRecipe(GetUserId(), recipeId);
 
             return Ok();
         }
 
-        private string GetUserEmail()
+        private string GetUserId()
         {
-            return HttpContext.GetClaimValue(configuration["Auth0ClaimNameSpace"] + "/email");
+            return HttpContext.GetClaimValue(configuration["Auth0ClaimNameSpace"]);
         }
     }
 }
