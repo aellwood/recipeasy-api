@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -33,6 +34,8 @@ namespace Recipeasy_API
             });
 
             AddRecipeasyDependencies(services);
+
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddControllers();
 

@@ -4,26 +4,28 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
 using Recipeasy_API.Models;
-using System.Linq;
+using AutoMapper;
 
 namespace Recipeasy_API.Services
 {
     public class RecipesService : IRecipesService
 {
         private readonly IDatabaseService databaseService;
+        private readonly IMapper mapper;
 
-        public RecipesService(IDatabaseService databaseService)
+        public RecipesService(IDatabaseService databaseService, IMapper mapper)
         {
             this.databaseService = databaseService;
+            this.mapper = mapper;
         }
 
         public async Task<Recipe> AddRecipe(Recipe recipePayload, string userId)
         {
-            var recipeGuid = Guid.NewGuid().ToString();
+            var recipeId = Guid.NewGuid().ToString();
             var recipeEntity = new RecipeEntity
             {
                 PartitionKey = userId,
-                RowKey = recipeGuid,
+                RowKey = recipeId,
                 RecipeName = recipePayload.RecipeName,
                 Notes = recipePayload.Notes
             };
@@ -34,50 +36,39 @@ namespace Recipeasy_API.Services
                 await databaseService.Add(
                     new IngredientEntity
                     {
-                        PartitionKey = recipeGuid,
+                        PartitionKey = recipeId,
                         RowKey = Guid.NewGuid().ToString(),
                         IngredientName = x.IngredientName,
                         Quantity = x.Quantity
                     }));
 
-            return await GetRecipe(userId, recipeGuid);
+            return await GetRecipe(userId, recipeId);
 
         }
 
         public async Task<Recipe> GetRecipe(string userId, string recipeId)
         {
             var recipeEntity = await databaseService.Get<RecipeEntity>(userId, recipeId);
+            var ingredientEntity = await databaseService.Get<IngredientEntity>(recipeId);
 
-            return new Recipe
-            {
-                RecipeId = recipeEntity.RowKey,
-                RecipeName = recipeEntity.RecipeName,
-                Notes = recipeEntity.Notes,
-                Ingredients = databaseService.Get<IngredientEntity>(recipeId).Result.Select(y => new Ingredient
-                {
-                    IngredientId = y.RowKey,
-                    IngredientName = y.IngredientName,
-                    Quantity = y.Quantity
-                }).ToList()
-            };
+            var recipe = mapper.Map<Recipe>(recipeEntity);
+            recipe.Ingredients = mapper.Map<List<Ingredient>>(ingredientEntity);
+            return recipe;
         }
 
         public async Task<List<Recipe>> GetRecipes(string userId)
         {
             var recipeEntities = await databaseService.Get<RecipeEntity>(userId);
 
-            return recipeEntities.Select(x => new Recipe
+            var recipes = mapper.Map<List<Recipe>>(recipeEntities);
+
+            foreach (var recipe in recipes)
             {
-                RecipeId = x.RowKey,
-                RecipeName = x.RecipeName,
-                Notes = x.Notes,
-                Ingredients = databaseService.Get<IngredientEntity>(x.RowKey).Result.Select(y => new Ingredient
-                {
-                    IngredientId = y.RowKey,
-                    IngredientName = y.IngredientName,
-                    Quantity = y.Quantity
-                }).ToList()
-            }).ToList();
+                var ingredients = await databaseService.Get<IngredientEntity>(recipe.RecipeId);
+                recipe.Ingredients = mapper.Map<List<Ingredient>>(ingredients);
+            }
+
+            return recipes;
         }
 
         public async Task DeleteRecipe(string userId, string recipeId)
