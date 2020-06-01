@@ -62,9 +62,14 @@ namespace Recipeasy_API.Services
             return recipes;
         }
 
-        public async Task DeleteRecipe(string userId, string recipeId)
+        public async Task<Recipe> DeleteRecipe(string userId, string recipeId)
         {
             var recipe = await GetRecipe(userId, recipeId);
+
+            if (recipe == null)
+            {
+                return null;
+            }
 
             await databaseService.Delete<RecipeEntity>(userId, recipeId);
 
@@ -72,6 +77,8 @@ namespace Recipeasy_API.Services
             {
                 await databaseService.Delete<IngredientEntity>(recipeId, ingredient.IngredientId);
             }
+
+            return recipe;
         }
     }
 }

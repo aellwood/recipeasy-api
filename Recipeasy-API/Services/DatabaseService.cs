@@ -65,7 +65,7 @@ namespace Recipeasy_API.Services
             var op = TableOperation.Retrieve<T>(partitionKey, rowKey);
             var row = await table.ExecuteAsync(op);
 
-            if (row != null)
+            if (row?.Result != null)
             {
                 var entity = (T) row.Result;
                 await table.ExecuteAsync(TableOperation.Delete(entity));
