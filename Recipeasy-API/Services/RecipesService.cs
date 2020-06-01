@@ -49,10 +49,14 @@ namespace Recipeasy_API.Services
         public async Task<Recipe> GetRecipe(string userId, string recipeId)
         {
             var recipeEntity = await databaseService.Get<RecipeEntity>(userId, recipeId);
-            var ingredientEntity = await databaseService.Get<IngredientEntity>(recipeId);
-
             var recipe = mapper.Map<Recipe>(recipeEntity);
-            recipe.Ingredients = mapper.Map<List<Ingredient>>(ingredientEntity);
+
+            if (recipe != null)
+            {
+                var ingredientEntity = await databaseService.Get<IngredientEntity>(recipeId);
+                recipe.Ingredients = mapper.Map<List<Ingredient>>(ingredientEntity);
+            }
+
             return recipe;
         }
 
@@ -77,7 +81,10 @@ namespace Recipeasy_API.Services
 
             await databaseService.Delete<RecipeEntity>(userId, recipeId);
 
-            recipe.Ingredients.ForEach(async x => await databaseService.Delete<IngredientEntity>(recipeId, x.IngredientId));
+            foreach (var ingredient in recipe.Ingredients)
+            {
+                await databaseService.Delete<IngredientEntity>(recipeId, ingredient.IngredientId);
+            }
         }
     }
 }
