@@ -25,11 +25,11 @@ namespace Recipeasy_API.Services
             await table.ExecuteAsync(TableOperation.Insert(entity));
         }
 
-        public async Task<T> Get<T>(string partitionKey, string id) where T : TableEntity, new()
+        public async Task<T> Get<T>(string partitionKey, string rowKey) where T : TableEntity, new()
         {
             var tableName = TableNameHelper.GetTableName(typeof(T).Name);
             var table = await GetTable(tableName);
-            var op = TableOperation.Retrieve<T>(partitionKey, id);
+            var op = TableOperation.Retrieve<T>(partitionKey, rowKey);
             var row = await table.ExecuteAsync(op);
 
             if (row != null)
@@ -40,11 +40,11 @@ namespace Recipeasy_API.Services
             return null;
         }
 
-        public async Task<IEnumerable<T>> Get<T>(string key) where T : TableEntity, new()
+        public async Task<IEnumerable<T>> Get<T>(string partitionKey) where T : TableEntity, new()
         {
             var tableName = TableNameHelper.GetTableName(typeof(T).Name);
             var table = await GetTable(tableName);
-            var query = new TableQuery<T>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, key));
+            var query = new TableQuery<T>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));
 
             TableContinuationToken token = null;
 
@@ -58,11 +58,11 @@ namespace Recipeasy_API.Services
             while (token != null);
         }
 
-        public async Task<T> Delete<T>(string partitionKey, string id) where T : TableEntity, new()
+        public async Task<T> Delete<T>(string partitionKey, string rowKey) where T : TableEntity, new()
         {
             var tableName = TableNameHelper.GetTableName(typeof(T).Name);
             var table = await GetTable(tableName);
-            var op = TableOperation.Retrieve<T>(partitionKey, id);
+            var op = TableOperation.Retrieve<T>(partitionKey, rowKey);
             var row = await table.ExecuteAsync(op);
 
             if (row != null)

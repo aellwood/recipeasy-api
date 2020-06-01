@@ -20,8 +20,10 @@ namespace Recipeasy_API.Services
         public async Task<Recipe> AddRecipe(Recipe recipePayload, string userId)
         {
             var recipeGuid = Guid.NewGuid().ToString();
-            var recipeEntity = new RecipeEntity(userId, recipeGuid)
+            var recipeEntity = new RecipeEntity
             {
+                PartitionKey = userId,
+                RowKey = recipeGuid,
                 RecipeName = recipePayload.RecipeName,
                 Notes = recipePayload.Notes
             };
@@ -30,10 +32,10 @@ namespace Recipeasy_API.Services
 
             recipePayload.Ingredients.ForEach(async x => 
                 await databaseService.Add(
-                    new IngredientEntity(
-                        recipeGuid, 
-                        Guid.NewGuid().ToString())
+                    new IngredientEntity
                     {
+                        PartitionKey = recipeGuid,
+                        RowKey = Guid.NewGuid().ToString(),
                         IngredientName = x.IngredientName,
                         Quantity = x.Quantity
                     }));
