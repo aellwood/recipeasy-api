@@ -32,7 +32,17 @@ namespace Recipeasy_API.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Get()
+        [Route("{recipeId}")]
+        public async Task<IActionResult> Get([FromRoute] string recipeId)
+        {
+            var recipe = await recipeService.GetRecipe(GetUserId(), recipeId);
+
+            return Ok(recipe);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetMany()
         {
             var recipes = await recipeService.GetRecipes(GetUserId());
 

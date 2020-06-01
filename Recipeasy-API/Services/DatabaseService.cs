@@ -25,6 +25,21 @@ namespace Recipeasy_API.Services
             await table.ExecuteAsync(TableOperation.Insert(entity));
         }
 
+        public async Task<T> Get<T>(string partitionKey, string id) where T : TableEntity, new()
+        {
+            var tableName = TableNameHelper.GetTableName(typeof(T).Name);
+            var table = await GetTable(tableName);
+            var op = TableOperation.Retrieve<T>(partitionKey, id);
+            var row = await table.ExecuteAsync(op);
+
+            if (row != null)
+            {
+                return (T)row.Result;
+            }
+
+            return null;
+        }
+
         public async Task<IEnumerable<T>> Get<T>(string key) where T : TableEntity, new()
         {
             var tableName = TableNameHelper.GetTableName(typeof(T).Name);

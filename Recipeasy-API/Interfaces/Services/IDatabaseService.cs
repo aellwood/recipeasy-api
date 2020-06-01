@@ -8,6 +8,8 @@ namespace Recipeasy_API.Interfaces.Services
     {
         Task Add<T>(T entity) where T : TableEntity, new();
 
+        Task<T> Get<T>(string partitionKey, string id) where T : TableEntity, new();
+
         Task<IEnumerable<T>> Get<T>(string partitionKey) where T : TableEntity, new();
 
         Task<T> Delete<T>(string partitionKey, string id) where T : TableEntity, new();

@@ -38,11 +38,26 @@ namespace Recipeasy_API.Services
                         Quantity = x.Quantity
                     }));
 
-            //TODO: Create method to only retrieve one recipe using userId and recipeId
-            var recipes = await GetRecipes(userId);
+            return await GetRecipe(userId, recipeGuid);
 
-            return recipes.FirstOrDefault(x => x.RecipeId == recipeGuid);
+        }
 
+        public async Task<Recipe> GetRecipe(string userId, string recipeId)
+        {
+            var recipeEntity = await databaseService.Get<RecipeEntity>(userId, recipeId);
+
+            return new Recipe
+            {
+                RecipeId = recipeEntity.RowKey,
+                RecipeName = recipeEntity.RecipeName,
+                Notes = recipeEntity.Notes,
+                Ingredients = databaseService.Get<IngredientEntity>(recipeId).Result.Select(y => new Ingredient
+                {
+                    IngredientId = y.RowKey,
+                    IngredientName = y.IngredientName,
+                    Quantity = y.Quantity
+                }).ToList()
+            };
         }
 
         public async Task<List<Recipe>> GetRecipes(string userId)
@@ -65,8 +80,7 @@ namespace Recipeasy_API.Services
 
         public async Task DeleteRecipe(string userId, string recipeId)
         {
-            var recipes = await GetRecipes(userId);
-            var recipe = recipes.FirstOrDefault(x => x.RecipeId == recipeId);
+            var recipe = await GetRecipe(userId, recipeId);
 
             await databaseService.Delete<RecipeEntity>(userId, recipeId);
 
