@@ -2,7 +2,6 @@
 using Recipeasy_API.Interfaces.Services;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System;
 using Recipeasy_API.Models;
 using AutoMapper;
 
@@ -21,29 +20,17 @@ namespace Recipeasy_API.Services
 
         public async Task<Recipe> AddRecipe(Recipe recipePayload, string userId)
         {
-            var recipeId = Guid.NewGuid().ToString();
-            var recipeEntity = new RecipeEntity
-            {
-                PartitionKey = userId,
-                RowKey = recipeId,
-                RecipeName = recipePayload.RecipeName,
-                Notes = recipePayload.Notes
-            };
+            var recipeEntity = mapper.Map<RecipeEntity>((recipePayload, userId));
 
             await databaseService.Add(recipeEntity);
 
-            recipePayload.Ingredients.ForEach(async x => 
-                await databaseService.Add(
-                    new IngredientEntity
-                    {
-                        PartitionKey = recipeId,
-                        RowKey = Guid.NewGuid().ToString(),
-                        IngredientName = x.IngredientName,
-                        Quantity = x.Quantity
-                    }));
+            foreach (var ingredient in recipePayload.Ingredients)
+            {
+                var ingredientEntity = mapper.Map<IngredientEntity>((ingredient, recipeEntity.RowKey));
+                await databaseService.Add(ingredientEntity);
+            }
 
-            return await GetRecipe(userId, recipeId);
-
+            return await GetRecipe(userId, recipeEntity.RowKey);
         }
 
         public async Task<Recipe> GetRecipe(string userId, string recipeId)
