@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Recipeasy_API
+namespace Recipeasy.Api
 {
     public class Program
     {

@@ -1,8 +1,8 @@
-﻿using Recipeasy_API.Models;
+﻿using Recipeasy.Api.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Recipeasy_API.Interfaces.Services
+namespace Recipeasy.Api.Interfaces.Services
 {
     public interface IRecipesService
     {

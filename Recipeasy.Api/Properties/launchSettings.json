@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Recipeasy_API": {
+    "Recipeasy.Api": {
       "commandName": "Project",
       "launchBrowser": false,
       "launchUrl": "swagger",

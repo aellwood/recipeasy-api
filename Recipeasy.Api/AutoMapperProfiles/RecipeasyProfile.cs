@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using Recipeasy_API.Entities;
-using Recipeasy_API.Models;
+using Recipeasy.Api.Entities;
+using Recipeasy.Api.Models;
 using System;
 
-namespace Recipeasy_API.AutoMapperProfiles
+namespace Recipeasy.Api.AutoMapperProfiles
 {
     public class RecipeasyProfile : Profile
     {

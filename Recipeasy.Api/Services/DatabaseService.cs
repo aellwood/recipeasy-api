@@ -2,12 +2,12 @@
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Table;
-using Recipeasy_API.Helpers;
-using Recipeasy_API.Interfaces.Services;
+using Recipeasy.Api.Helpers;
+using Recipeasy.Api.Interfaces.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Recipeasy_API.Services
+namespace Recipeasy.Api.Services
 {
     public class DatabaseService : IDatabaseService
     {

@@ -6,10 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Recipeasy_API.Interfaces.Services;
-using Recipeasy_API.Services;
+using Recipeasy.Api.Interfaces.Services;
+using Recipeasy.Api.Services;
 
-namespace Recipeasy_API
+namespace Recipeasy.Api
 {
     public class Startup
     {

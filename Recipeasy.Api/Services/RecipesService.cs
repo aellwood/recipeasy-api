@@ -1,11 +1,11 @@
-﻿using Recipeasy_API.Entities;
-using Recipeasy_API.Interfaces.Services;
+﻿using Recipeasy.Api.Entities;
+using Recipeasy.Api.Interfaces.Services;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Recipeasy_API.Models;
+using Recipeasy.Api.Models;
 using AutoMapper;
 
-namespace Recipeasy_API.Services
+namespace Recipeasy.Api.Services
 {
     public class RecipesService : IRecipesService
 {

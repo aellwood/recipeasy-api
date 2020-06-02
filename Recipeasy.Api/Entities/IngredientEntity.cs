@@ -1,6 +1,6 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
 
-namespace Recipeasy_API.Entities
+namespace Recipeasy.Api.Entities
 {
     public class IngredientEntity : TableEntity
     {

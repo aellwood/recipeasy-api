@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Recipeasy_API.Models
+namespace Recipeasy.Api.Models
 {
     public class Recipe
     {

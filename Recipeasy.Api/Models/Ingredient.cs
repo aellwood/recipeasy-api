@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Recipeasy_API.Models
+namespace Recipeasy.Api.Models
 {
     public class Ingredient
     {

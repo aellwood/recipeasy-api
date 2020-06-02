@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Recipeasy_API</RootNamespace>
+    <RootNamespace>Recipeasy.Api</RootNamespace>
     <UserSecretsId>62f7cee2-175a-481f-b04f-8beda943951b</UserSecretsId>
   </PropertyGroup>
 

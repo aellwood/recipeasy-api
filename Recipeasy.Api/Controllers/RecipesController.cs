@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Recipeasy_API.ExtensionMethods;
-using Recipeasy_API.Interfaces.Services;
-using Recipeasy_API.Models;
+using Recipeasy.Api.ExtensionMethods;
+using Recipeasy.Api.Interfaces.Services;
+using Recipeasy.Api.Models;
 using System.Threading.Tasks;
 
-namespace Recipeasy_API.Controllers
+namespace Recipeasy.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

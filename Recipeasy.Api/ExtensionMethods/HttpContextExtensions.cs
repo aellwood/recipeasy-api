@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 
-namespace Recipeasy_API.ExtensionMethods
+namespace Recipeasy.Api.ExtensionMethods
 {
     public static class HttpContextExtensions
     {

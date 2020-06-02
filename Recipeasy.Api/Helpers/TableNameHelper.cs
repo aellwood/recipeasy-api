@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Recipeasy_API.Helpers
+namespace Recipeasy.Api.Helpers
 {
     public static class TableNameHelper
     {
