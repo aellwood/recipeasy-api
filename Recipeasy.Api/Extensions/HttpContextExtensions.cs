@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
-namespace Recipeasy.Api.ExtensionMethods
+namespace Recipeasy.Api.Extensions
 {
     public static class HttpContextExtensions
     {

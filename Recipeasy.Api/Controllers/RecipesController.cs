@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Recipeasy.Api.ExtensionMethods;
 using Recipeasy.Api.Interfaces.Services;
 using Recipeasy.Api.Models;
 using System.Threading.Tasks;
+using Recipeasy.Api.Contexts;
+using Recipeasy.Api.Extensions;
 
 namespace Recipeasy.Api.Controllers
 {
@@ -14,11 +16,13 @@ namespace Recipeasy.Api.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IRecipesService _recipeService;
+        private readonly ApplicationDbContext _context;
 
-        public RecipesController(IConfiguration configuration, IRecipesService recipeService)
+        public RecipesController(IConfiguration configuration, IRecipesService recipeService, ApplicationDbContext context)
         {
             _configuration = configuration;
             _recipeService = recipeService;
+            _context = context;
         }
 
         [HttpPost]
@@ -53,7 +57,16 @@ namespace Recipeasy.Api.Controllers
         [Route("test")]
         public IActionResult TestGet()
         {
-            return Ok("Successful GET request");
+            _context.Recipes.Add(new Recipe
+            {
+                RecipeId = (_context.Recipes.Count() + 1).ToString(),
+                RecipeName = "Bla",
+                Notes = "Blabla notes"
+            });
+            
+            _context.SaveChanges();
+            
+            return Ok(_context.Recipes.ToList());
         }
 
         [HttpDelete]

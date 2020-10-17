@@ -3,9 +3,9 @@ using Recipeasy.Api.Models;
 
 namespace Recipeasy.Api.Contexts
 {
-    public class DataContext : DbContext
+    public class ApplicationDbContext : DbContext
     {
-        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
             
         }
