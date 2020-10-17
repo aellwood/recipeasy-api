@@ -10,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Recipeasy.Api.Contexts;
 using Recipeasy.Api.Interfaces.Services;
-using Recipeasy.Api.Services.V1;
+using Recipeasy.Api.Services;
 
 namespace Recipeasy.Api
 {
@@ -91,8 +91,7 @@ namespace Recipeasy.Api
 
         private void AddRecipeasyDependencies(IServiceCollection services)
         {
-            services.AddTransient<IRecipesService, RecipesV1Service>();
-            services.AddTransient<IDatabaseService, DatabaseService>();
+            services.AddTransient<IRecipesService, RecipesService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

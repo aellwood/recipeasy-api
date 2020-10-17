@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Recipeasy.Api.Interfaces.Services;
 using Recipeasy.Api.Models;
 
-namespace Recipeasy.Api.Services.V2
+namespace Recipeasy.Api.Services
 {
-    public class RecipesV2Service : IRecipesService
+    public class RecipesService : IRecipesService
     {
         public Task<Recipe> AddRecipe(Recipe recipe, string userId)
         {
