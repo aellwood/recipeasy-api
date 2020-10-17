@@ -50,6 +50,7 @@ namespace Recipeasy.Api.Controllers
         }
 
         [HttpGet]
+        [Route("test")]
         public IActionResult TestGet()
         {
             return Ok("Successful GET request");
