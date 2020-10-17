@@ -1,21 +1,21 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Table;
 using Recipeasy.Api.Helpers;
 using Recipeasy.Api.Interfaces.Services;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace Recipeasy.Api.Services
+namespace Recipeasy.Api.Services.V1
 {
     public class DatabaseService : IDatabaseService
     {
-        private readonly string dbPassword;
+        private readonly string _dbPassword;
 
         public DatabaseService(IConfiguration configuration)
         {
-            dbPassword = configuration["SecretTablesPassword"];
+            _dbPassword = configuration["SecretTablesPassword"];
         }
 
         public async Task Add<T>(T entity) where T : TableEntity, new()
@@ -32,12 +32,7 @@ namespace Recipeasy.Api.Services
             var op = TableOperation.Retrieve<T>(partitionKey, rowKey);
             var row = await table.ExecuteAsync(op);
 
-            if (row != null)
-            {
-                return (T)row.Result;
-            }
-
-            return null;
+            return (T) row?.Result;
         }
 
         public async Task<IEnumerable<T>> Get<T>(string partitionKey) where T : TableEntity, new()
@@ -77,7 +72,7 @@ namespace Recipeasy.Api.Services
 
         private async Task<CloudTable> GetTable(string tableName)
         {
-            var acc = new CloudStorageAccount(new StorageCredentials("recipeasytables", dbPassword), true);
+            var acc = new CloudStorageAccount(new StorageCredentials("recipeasytables", _dbPassword), true);
             var client = acc.CreateCloudTableClient();
             var table = client.GetTableReference(tableName);
             await table.CreateIfNotExistsAsync();

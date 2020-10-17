@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Recipeasy.Api.Contexts;
 using Recipeasy.Api.Interfaces.Services;
-using Recipeasy.Api.Services;
+using Recipeasy.Api.Services.V1;
 
 namespace Recipeasy.Api
 {
@@ -33,6 +35,8 @@ namespace Recipeasy.Api
                 options.Audience = Configuration["Auth0Audience"];
             });
 
+            services.AddDbContext<DataContext>(p => p.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+
             AddRecipeasyDependencies(services);
 
             services.AddAutoMapper(typeof(Startup));
@@ -51,7 +55,7 @@ namespace Recipeasy.Api
 
         private void AddRecipeasyDependencies(IServiceCollection services)
         {
-            services.AddTransient<IRecipesService, RecipesService>();
+            services.AddTransient<IRecipesService, RecipesV1Service>();
             services.AddTransient<IDatabaseService, DatabaseService>();
         }
 

@@ -12,20 +12,20 @@ namespace Recipeasy.Api.Controllers
     [ApiController]
     public class RecipesController : ControllerBase
     {
-        private readonly IConfiguration configuration;
-        private readonly IRecipesService recipeService;
+        private readonly IConfiguration _configuration;
+        private readonly IRecipesService _recipeService;
 
         public RecipesController(IConfiguration configuration, IRecipesService recipeService)
         {
-            this.configuration = configuration;
-            this.recipeService = recipeService;
+            _configuration = configuration;
+            _recipeService = recipeService;
         }
 
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Post([FromBody] Recipe recipe)
         {
-            var addedRecipe = await recipeService.AddRecipe(recipe, GetUserId());
+            var addedRecipe = await _recipeService.AddRecipe(recipe, GetUserId());
 
             return Ok(addedRecipe);
         }
@@ -35,7 +35,7 @@ namespace Recipeasy.Api.Controllers
         [Route("{recipeId}")]
         public async Task<IActionResult> Get([FromRoute] string recipeId)
         {
-            var recipe = await recipeService.GetRecipe(GetUserId(), recipeId);
+            var recipe = await _recipeService.GetRecipe(GetUserId(), recipeId);
 
             return Ok(recipe);
         }
@@ -44,7 +44,7 @@ namespace Recipeasy.Api.Controllers
         [Authorize]
         public async Task<IActionResult> GetMany()
         {
-            var recipes = await recipeService.GetRecipes(GetUserId());
+            var recipes = await _recipeService.GetRecipes(GetUserId());
 
             return Ok(recipes);
         }
@@ -61,14 +61,14 @@ namespace Recipeasy.Api.Controllers
         [Route("{recipeId}")]
         public async Task<IActionResult> Delete([FromRoute] string recipeId)
         {
-            var recipe = await recipeService.DeleteRecipe(GetUserId(), recipeId);
+            var recipe = await _recipeService.DeleteRecipe(GetUserId(), recipeId);
 
             return Ok(recipe);
         }
 
         private string GetUserId()
         {
-            return HttpContext.GetClaimValue(configuration["Auth0ClaimNameSpace"]);
+            return HttpContext.GetClaimValue(_configuration["Auth0ClaimNameSpace"]);
         }
     }
 }
