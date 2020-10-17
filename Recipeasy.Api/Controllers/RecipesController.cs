@@ -49,6 +49,12 @@ namespace Recipeasy.Api.Controllers
             return Ok(recipes);
         }
 
+        [HttpGet]
+        public IActionResult TestGet()
+        {
+            return Ok("Successful GET request");
+        }
+
         [HttpDelete]
         [Authorize]
         [Route("{recipeId}")]
