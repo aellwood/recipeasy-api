@@ -41,9 +41,11 @@ namespace Recipeasy.Api
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins(
-                            "http://localhost:4200",
-                            "https://silly-mahavira-4f9bf8.netlify.app")
+                        builder
+                            .WithOrigins(
+                                "http://localhost:4200",
+                                "https://silly-mahavira-4f9bf8.netlify.app")
+                            .WithMethods("PUT", "DELETE", "GET", "OPTIONS", "POST")
                             .AllowAnyHeader();
                     });
             });
