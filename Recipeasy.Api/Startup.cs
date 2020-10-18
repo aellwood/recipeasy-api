@@ -35,6 +35,18 @@ namespace Recipeasy.Api
                 options.Authority = Configuration["Auth0Authority"];
                 options.Audience = Configuration["Auth0Audience"];
             });
+            
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins(
+                            "http://localhost:4200",
+                            "https://silly-mahavira-4f9bf8.netlify.app")
+                            .AllowAnyHeader();
+                    });
+            });
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 {
@@ -108,10 +120,13 @@ namespace Recipeasy.Api
             }
 
             app.UseRouting();
+            app.UseCors();
+            
             app.UseAuthentication();
             app.UseAuthorization();
+                
             app.UseEndpoints(endpoints => endpoints.MapControllers());
-
+            
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
