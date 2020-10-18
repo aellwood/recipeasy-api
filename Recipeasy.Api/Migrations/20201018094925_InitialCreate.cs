@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Recipeasy.Api.Migrations
 {
@@ -12,7 +13,9 @@ namespace Recipeasy.Api.Migrations
                 {
                     RecipeId = table.Column<string>(nullable: false),
                     RecipeName = table.Column<string>(nullable: true),
-                    Notes = table.Column<string>(nullable: true)
+                    Notes = table.Column<string>(nullable: true),
+                    DateAdded = table.Column<DateTime>(nullable: false),
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

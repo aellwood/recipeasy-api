@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Recipeasy.Api.Contexts;
 using Recipeasy.Api.Interfaces.Services;
 using Recipeasy.Api.Models;
 
@@ -7,24 +11,52 @@ namespace Recipeasy.Api.Services
 {
     public class RecipesService : IRecipesService
     {
-        public Task<Recipe> AddRecipe(Recipe recipe, string userId)
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public RecipesService(ApplicationDbContext context, IMapper mapper)
         {
-            throw new System.NotImplementedException();
+            _context = context;
+            _mapper = mapper;
         }
 
-        public Task<Recipe> GetRecipe(string userId, string recipeId)
+        public Recipe AddRecipe(Recipe recipe, string userId)
         {
-            throw new System.NotImplementedException();
+            recipe.UserId = userId;
+            recipe.RecipeId = Guid.NewGuid().ToString();
+            recipe.DateAdded = DateTime.UtcNow;
+            
+            recipe.Ingredients.ForEach(x => x.IngredientId = Guid.NewGuid().ToString());
+            
+            _context.Recipes.Add(recipe);
+            _context.SaveChanges();
+
+            return recipe;
         }
 
-        public Task<List<Recipe>> GetRecipes(string userId)
+        public Recipe GetRecipe(string userId, string recipeId)
         {
-            throw new System.NotImplementedException();
+            return _context.Recipes.Include(x => x.Ingredients).FirstOrDefault(x => x.UserId == userId && x.RecipeId == recipeId);
         }
 
-        public Task<Recipe> DeleteRecipe(string v, string recipeId)
+        public List<Recipe> GetRecipes(string userId)
         {
-            throw new System.NotImplementedException();
+            return _context.Recipes.Include(x => x.Ingredients).Where(x => x.UserId == userId).ToList();
+        }
+
+        public Recipe DeleteRecipe(string userId, string recipeId)
+        {
+            var recipe = _context.Recipes.Include(x => x.Ingredients).FirstOrDefault(x => x.UserId == userId && x.RecipeId == recipeId);
+
+            if (recipe == null)
+            {
+                return null;
+            }
+
+            _context.Recipes.Remove(recipe);
+            _context.SaveChanges();
+            
+            return recipe;
         }
     }
 }
